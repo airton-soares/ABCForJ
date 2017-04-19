@@ -1,10 +1,10 @@
  
-\.classpath 
- 
-\.project 
- 
-\.settings/ 
- 
-abcforj/bin/ 
- 
-abcforj/target/ 
+\.classpath
+
+\.project
+
+\.settings/
+
+bin/
+
+target/
