@@ -1,6 +1,10 @@
 package com.github.abcforj;
 
-import com.github.abcforj.function.RosenbrockFunction;
+import javax.swing.JFrame;
+
+import org.math.plot.Plot2DPanel;
+
+import com.github.abcforj.function.*;
 
 public class Main
 {
@@ -34,9 +38,27 @@ public class Main
 	    int dimension = Integer.parseInt(args[6]);
 
 	    ABC abc = new ABC(beehiveSize, scoutBeesProportion, numberOfExplorationCycles, limitOfExploitationCycles,
-		    new RosenbrockFunction(bottomDomainLimit, topDomainLimit), dimension);
+		    new RotatedRastriginFunction(bottomDomainLimit, topDomainLimit), dimension);
 	    abc.doFoodSearch();
-	} else
+	    
+	    double[] results = abc.getBestSolutions();
+	    double[] iteractions = new double[results.length];
+
+	    for (int i = 0; i < results.length; i++)
+	    {
+		iteractions[i] = i + 1;
+	    }
+
+	    Plot2DPanel plot = new Plot2DPanel();
+	    plot.addLinePlot("Optimization result", iteractions, results);
+	    JFrame frame = new JFrame("Optimization report");
+	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	    frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
+	    frame.setContentPane(plot);
+	    frame.pack();
+	    frame.setVisible(true);
+	}
+	else
 	{
 	    System.err.println("INVALID NUMBER OF ARGUMENTS!");
 	}

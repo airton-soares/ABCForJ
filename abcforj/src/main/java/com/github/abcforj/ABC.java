@@ -1,8 +1,5 @@
 package com.github.abcforj;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.github.abcforj.bee.ScoutBee;
 import com.github.abcforj.beehive.Beehive;
 import com.github.abcforj.function.Function;
@@ -13,34 +10,50 @@ public class ABC
     private int numberOfExplorationCycles;
     private int limitOfExploitationCycles;
     private Function function;
-    private List<Double> bestSolutions;
+    private double[] bestSolutions;
 
-    public ABC(int beehiveSize, float scoutBeesProportion, int numberOfExplorationCycles,
-	    int limitExploitationCycles, Function function, int dimension)
+    public ABC(int beehiveSize, float scoutBeesProportion, int numberOfExplorationCycles, int limitExploitationCycles,
+	    Function function, int dimension)
     {
 	this.beehive = new Beehive(beehiveSize, scoutBeesProportion, dimension);
 	this.numberOfExplorationCycles = numberOfExplorationCycles;
 	this.limitOfExploitationCycles = limitExploitationCycles;
 	this.function = function;
-	this.bestSolutions = new ArrayList<Double>();
+	this.bestSolutions = new double[this.numberOfExplorationCycles];
     }
 
     public void doFoodSearch()
     {
 	int remainingExplorationCycles = this.numberOfExplorationCycles;
-	
-	while(remainingExplorationCycles > 0)
+
+	while (remainingExplorationCycles > 0)
 	{
 	    this.beehive.initializeBeehive(this.function.getBottomDomainLimit(), this.function.getTopDomainLimit());
 	    this.beehive.allocateOnlookerBees(this.function);
-	    
-	    for(ScoutBee scoutBee: this.beehive.getScoutBees())
+	    double bestResult = 0;
+
+	    for (int i = 0; i < this.beehive.getScoutBees().size(); i++)
 	    {
+		ScoutBee scoutBee = this.beehive.getScoutBees().get(i);
 		scoutBee.updateAllocatedOnlookerBeesPositions(this.function, this.limitOfExploitationCycles);
+
+		if (i == 0)
+		{
+		    bestResult = this.function.fitness(scoutBee.getCurrentPosition());
+		}
+		else
+		{
+		    double scoutBeeBestFitness = this.function.fitness(scoutBee.getCurrentPosition());
+
+		    if (this.function.compareFitness(scoutBeeBestFitness, bestResult))
+		    {
+			bestResult = scoutBeeBestFitness;
+		    }
+		}
 	    }
 	    
-	    //TODO pegar a melhor solução do ciclo e guardar
-	    
+	    this.bestSolutions[this.numberOfExplorationCycles - remainingExplorationCycles] = bestResult;
+
 	    remainingExplorationCycles--;
 	}
     }
@@ -85,12 +98,12 @@ public class ABC
 	this.function = function;
     }
 
-    public List<Double> getBestSolutions()
+    public double[] getBestSolutions()
     {
 	return bestSolutions;
     }
 
-    public void setBestSolutions(List<Double> bestSolutions)
+    public void setBestSolutions(double[] bestSolutions)
     {
 	this.bestSolutions = bestSolutions;
     }
