@@ -95,7 +95,7 @@ public class Beehive
 		}
 		
 		List<OnlookerBee> allocatedOnlookerBees = this.onlookerBees.subList(0, numberOfAllocatedOnlookerBees);
-		this.scoutBees.get(i).getAllocatedOnlookerBees().addAll(allocatedOnlookerBees);
+		this.scoutBees.get(i).addOnlookerBees(allocatedOnlookerBees);
 		this.onlookerBees = this.onlookerBees.subList(numberOfAllocatedOnlookerBees, this.onlookerBees.size());
 	    }
 	}

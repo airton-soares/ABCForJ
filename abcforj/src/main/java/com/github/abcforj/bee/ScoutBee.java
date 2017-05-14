@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.abcforj.function.Function;
+import com.github.abcforj.utils.PositionUtils;
 
 public class ScoutBee
 {
+    private static final double NEIGHBORHOOD_RADIUS = 1000;
+
     private double[] currentPosition;
     private double[] bestFoodSourcePosition;
     private List<OnlookerBee> allocatedOnlookerBees;
@@ -30,56 +33,73 @@ public class ScoutBee
 
     }
 
+    public void addOnlookerBees(List<OnlookerBee> onlookerBees)
+    {
+	for (OnlookerBee onlookerBee : onlookerBees)
+	{
+	    onlookerBee.setCurrentPosition(PositionUtils.moveInRadius(this.currentPosition, NEIGHBORHOOD_RADIUS));
+	}
+    }
+
     public void updateAllocatedOnlookerBeesPositions(Function function, int limitOfExploitationCycles)
     {
 	int allocatedOnlookerBeesSize = this.allocatedOnlookerBees.size();
 	int limitOfExploitationCyclesAux = limitOfExploitationCycles;
-	
-	while (limitOfExploitationCycles > 0)
+
+	if (allocatedOnlookerBeesSize > 0)
 	{
-	    for (int i = 0; i < allocatedOnlookerBeesSize; i++)
+	    while (limitOfExploitationCycles > 0)
 	    {
-		OnlookerBee currentOnlookerBee = this.allocatedOnlookerBees.get(i);
-		double currentFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
-
-		int neighborIndex = 0;
-
-		do
+		for (int i = 0; i < allocatedOnlookerBeesSize; i++)
 		{
-		    neighborIndex = ThreadLocalRandom.current().nextInt(0, allocatedOnlookerBeesSize);
-		} while (neighborIndex == i);
+		    OnlookerBee currentOnlookerBee = this.allocatedOnlookerBees.get(i);
+		    double currentOnlookerBeeFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
+		    double scoutBeeFitness = function.fitness(this.currentPosition);
 
-		OnlookerBee neighborOnlookerBee = this.allocatedOnlookerBees.get(neighborIndex);
+		    if (function.compareFitness(currentOnlookerBeeFitness, scoutBeeFitness))
+		    {
+			this.currentPosition = currentOnlookerBee.getCurrentPosition().clone();
+		    }
 
-		for (int j = 0; j < currentOnlookerBee.getCurrentPosition().length; j++)
-		{
-		    currentOnlookerBee.getCurrentPosition()[j] += ThreadLocalRandom.current().nextInt(-1, 2)
-			    * (currentOnlookerBee.getCurrentPosition()[j]
-				    - neighborOnlookerBee.getCurrentPosition()[j]);
+		    int neighborIndex = 0;
+
+		    do
+		    {
+			neighborIndex = ThreadLocalRandom.current().nextInt(0, allocatedOnlookerBeesSize);
+		    } while (neighborIndex == i);
+
+		    OnlookerBee neighborOnlookerBee = this.allocatedOnlookerBees.get(neighborIndex);
+
+		    for (int j = 0; j < currentOnlookerBee.getCurrentPosition().length; j++)
+		    {
+			currentOnlookerBee.getCurrentPosition()[j] += ThreadLocalRandom.current().nextInt(-1, 2)
+				* (currentOnlookerBee.getCurrentPosition()[j]
+					- neighborOnlookerBee.getCurrentPosition()[j]);
+		    }
+
+		    double newOnlookerBeeFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
+
+		    if (function.compareFitness(newOnlookerBeeFitness, currentOnlookerBeeFitness))
+		    {
+			currentOnlookerBee.setBestPosition(currentOnlookerBee.getCurrentPosition());
+		    }
+
 		}
 
-		double newFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
+		double[] bestOnlookerBeePosition = this.getBestOnlookerBeePosition(function);
 
-		if (function.compareFitness(newFitness, currentFitness))
+		double bestOnlookerBeePositionFitness = function.fitness(bestOnlookerBeePosition);
+		double bestFoodSourcePosition = function.fitness(this.bestFoodSourcePosition);
+
+		if (function.compareFitness(bestOnlookerBeePositionFitness, bestFoodSourcePosition))
 		{
-		    currentOnlookerBee.setBestPosition(currentOnlookerBee.getCurrentPosition());
+		    this.bestFoodSourcePosition = bestOnlookerBeePosition;
+		    limitOfExploitationCycles = limitOfExploitationCyclesAux;
 		}
-
-	    }
-	    
-	    double[] bestOnlookerBeePosition = this.getBestOnlookerBeePosition(function);
-	    
-	    double bestOnlookerBeePositionFitness = function.fitness(bestOnlookerBeePosition);
-	    double bestFoodSourcePosition = function.fitness(this.bestFoodSourcePosition);
-	    
-	    if(function.compareFitness(bestOnlookerBeePositionFitness, bestFoodSourcePosition))
-	    {
-		this.bestFoodSourcePosition = bestOnlookerBeePosition;
-		limitOfExploitationCycles = limitOfExploitationCyclesAux;
-	    }
-	    else
-	    {
-		limitOfExploitationCycles--;
+		else
+		{
+		    limitOfExploitationCycles--;
+		}
 	    }
 	}
     }
