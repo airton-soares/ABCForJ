@@ -12,7 +12,8 @@ public class Main
      * @param args
      *            [2] -> Número de ciclos de exploração.
      * @param args
-     *            [3] -> Número de ciclos de refinamento.
+     *            [3] -> Número de ciclos de refinamento premitidos sem
+     *            melhoras.
      * @param args
      *            [4] -> Limite inferior da função.
      * @param args
@@ -27,15 +28,13 @@ public class Main
 	    int beehiveSize = Integer.parseInt(args[0]);
 	    float scoutBeesProportion = Float.parseFloat(args[1]);
 	    int numberOfExplorationCycles = Integer.parseInt(args[2]);
-	    int numberOfExploitationCycles = Integer.parseInt(args[3]);
+	    int limitOfExploitationCycles = Integer.parseInt(args[3]);
 	    double bottomDomainLimit = Double.parseDouble(args[4]);
 	    double topDomainLimit = Double.parseDouble(args[5]);
 	    int dimension = Integer.parseInt(args[6]);
 
-	    ABC abc = new ABC(beehiveSize, scoutBeesProportion, numberOfExplorationCycles,
-		    	      numberOfExploitationCycles, new RosenbrockFunction(bottomDomainLimit,
-		    		      						 topDomainLimit),
-		    	      dimension);
+	    ABC abc = new ABC(beehiveSize, scoutBeesProportion, numberOfExplorationCycles, limitOfExploitationCycles,
+		    new RosenbrockFunction(bottomDomainLimit, topDomainLimit), dimension);
 	    abc.doFoodSearch();
 	} else
 	{

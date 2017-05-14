@@ -11,16 +11,16 @@ public class ABC
 {
     private Beehive beehive;
     private int numberOfExplorationCycles;
-    private int numberOfExploitationCycles;
+    private int limitOfExploitationCycles;
     private Function function;
     private List<Double> bestSolutions;
 
     public ABC(int beehiveSize, float scoutBeesProportion, int numberOfExplorationCycles,
-	    int numberOfExploitationCycles, Function function, int dimension)
+	    int limitExploitationCycles, Function function, int dimension)
     {
 	this.beehive = new Beehive(beehiveSize, scoutBeesProportion, dimension);
 	this.numberOfExplorationCycles = numberOfExplorationCycles;
-	this.numberOfExploitationCycles = numberOfExploitationCycles;
+	this.limitOfExploitationCycles = limitExploitationCycles;
 	this.function = function;
 	this.bestSolutions = new ArrayList<Double>();
     }
@@ -36,9 +36,10 @@ public class ABC
 	    
 	    for(ScoutBee scoutBee: this.beehive.getScoutBees())
 	    {
-		scoutBee.updateAllocatedOnlookerBeesPositions(this.function);
-		//TODO Descobrir como/se será preciso paralelizar
+		scoutBee.updateAllocatedOnlookerBeesPositions(this.function, this.limitOfExploitationCycles);
 	    }
+	    
+	    //TODO pegar a melhor solução do ciclo e guardar
 	    
 	    remainingExplorationCycles--;
 	}
@@ -64,14 +65,14 @@ public class ABC
 	this.numberOfExplorationCycles = numberOfExplorationCycles;
     }
 
-    public int getNumberOfExploitationCycles()
+    public int getLimitOfExploitationCycles()
     {
-	return numberOfExploitationCycles;
+	return limitOfExploitationCycles;
     }
 
-    public void setNumberOfExploitationCycles(int numberOfExploitationCycles)
+    public void setLimitOfExploitationCycles(int limitOfExploitationCycles)
     {
-	this.numberOfExploitationCycles = numberOfExploitationCycles;
+	this.limitOfExploitationCycles = limitOfExploitationCycles;
     }
 
     public Function getFunction()
