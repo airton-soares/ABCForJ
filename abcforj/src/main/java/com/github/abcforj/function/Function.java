@@ -7,18 +7,18 @@ public abstract class Function
 
     public Function(double bottomDomainLimit, double topDomainLimit)
     {
-	this.bottomDomainLimit = bottomDomainLimit;
-	this.topDomainLimit = topDomainLimit;
+        this.bottomDomainLimit = bottomDomainLimit;
+        this.topDomainLimit = topDomainLimit;
     }
 
     /**
      * Função avaliadora da aptidão de uma determinada função para uma dada
      * posição no espaço de busca.
-     * 
+     *
      * @param position
      *            Posição a ser avaliada pela função de "fitness"
      * @return Aptidão da posição passada como parâmetro para essa função
-     * 
+     *
      * @author Airton Soares
      */
     public abstract double fitness(double[] position);
@@ -27,21 +27,21 @@ public abstract class Function
 
     public double getBottomDomainLimit()
     {
-	return bottomDomainLimit;
+        return bottomDomainLimit;
     }
 
     public void setBottomDomainLimit(double bottomDomainLimit)
     {
-	this.bottomDomainLimit = bottomDomainLimit;
+        this.bottomDomainLimit = bottomDomainLimit;
     }
 
     public double getTopDomainLimit()
     {
-	return topDomainLimit;
+        return topDomainLimit;
     }
 
     public void setTopDomainLimit(double topDomainLimit)
     {
-	this.topDomainLimit = topDomainLimit;
+        this.topDomainLimit = topDomainLimit;
     }
 }
