@@ -7,20 +7,17 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.github.abcforj.function.Function;
 import com.github.abcforj.utils.PositionUtils;
 
-public class ScoutBee
-{
+public class ScoutBee {
     private static final double NEIGHBORHOOD_RADIUS = 1000;
 
     private double[] currentPosition;
     private double[] bestFoodSourcePosition;
     private List<OnlookerBee> allocatedOnlookerBees;
 
-    public ScoutBee(double bottomDomainLimit, double topDomainLimit, int dimension)
-    {
+    public ScoutBee(double bottomDomainLimit, double topDomainLimit, int dimension) {
         this.currentPosition = new double[dimension];
 
-        for (int i = 0; i < dimension; i++)
-        {
+        for (int i = 0; i < dimension; i++) {
             this.currentPosition[i] = bottomDomainLimit + Math.random() * (topDomainLimit - bottomDomainLimit);
         }
 
@@ -30,46 +27,37 @@ public class ScoutBee
 
     public ScoutBee() {}
 
-    public void addOnlookerBees(List<OnlookerBee> onlookerBees)
-    {
-        for (OnlookerBee onlookerBee : onlookerBees)
-        {
+    public void addOnlookerBees(List<OnlookerBee> onlookerBees) {
+        for (OnlookerBee onlookerBee : onlookerBees) {
             onlookerBee.setCurrentPosition(PositionUtils.moveInRadius(this.currentPosition, NEIGHBORHOOD_RADIUS));
         }
     }
 
-    public void updateAllocatedOnlookerBeesPositions(Function function, int limitOfExploitationCycles)
-    {
+    public void updateAllocatedOnlookerBeesPositions(Function function, int limitOfExploitationCycles) {
         int allocatedOnlookerBeesSize = this.allocatedOnlookerBees.size();
         int limitOfExploitationCyclesAux = limitOfExploitationCycles;
 
-        if (allocatedOnlookerBeesSize > 0)
-        {
-            while (limitOfExploitationCycles > 0)
-            {
-                for (int i = 0; i < allocatedOnlookerBeesSize; i++)
-                {
+        if (allocatedOnlookerBeesSize > 0) {
+            while (limitOfExploitationCycles > 0) {
+                for (int i = 0; i < allocatedOnlookerBeesSize; i++) {
                     OnlookerBee currentOnlookerBee = this.allocatedOnlookerBees.get(i);
                     double currentOnlookerBeeFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
                     double scoutBeeFitness = function.fitness(this.currentPosition);
 
-                    if (function.compareFitness(currentOnlookerBeeFitness, scoutBeeFitness))
-                    {
+                    if (function.compareFitness(currentOnlookerBeeFitness, scoutBeeFitness)) {
                         this.currentPosition = currentOnlookerBee.getCurrentPosition().clone();
                     }
 
                     int neighborIndex = 0;
 
-                    do
-                    {
+                    do {
                         neighborIndex = ThreadLocalRandom.current().nextInt(0, allocatedOnlookerBeesSize);
                     }
                     while (neighborIndex == i);
 
                     OnlookerBee neighborOnlookerBee = this.allocatedOnlookerBees.get(neighborIndex);
 
-                    for (int j = 0; j < currentOnlookerBee.getCurrentPosition().length; j++)
-                    {
+                    for (int j = 0; j < currentOnlookerBee.getCurrentPosition().length; j++) {
                         currentOnlookerBee.getCurrentPosition()[j] += ThreadLocalRandom.current().nextInt(-1, 2)
                                 * (currentOnlookerBee.getCurrentPosition()[j]
                                    - neighborOnlookerBee.getCurrentPosition()[j]);
@@ -77,8 +65,7 @@ public class ScoutBee
 
                     double newOnlookerBeeFitness = function.fitness(currentOnlookerBee.getCurrentPosition());
 
-                    if (function.compareFitness(newOnlookerBeeFitness, currentOnlookerBeeFitness))
-                    {
+                    if (function.compareFitness(newOnlookerBeeFitness, currentOnlookerBeeFitness)) {
                         currentOnlookerBee.setBestPosition(currentOnlookerBee.getCurrentPosition());
                     }
 
@@ -89,39 +76,32 @@ public class ScoutBee
                 double bestOnlookerBeePositionFitness = function.fitness(bestOnlookerBeePosition);
                 double bestFoodSourcePosition = function.fitness(this.bestFoodSourcePosition);
 
-                if (function.compareFitness(bestOnlookerBeePositionFitness, bestFoodSourcePosition))
-                {
+                if (function.compareFitness(bestOnlookerBeePositionFitness, bestFoodSourcePosition)) {
                     this.bestFoodSourcePosition = bestOnlookerBeePosition;
                     limitOfExploitationCycles = limitOfExploitationCyclesAux;
                 }
-                else
-                {
+                else {
                     limitOfExploitationCycles--;
                 }
             }
         }
     }
 
-    private double[] getBestOnlookerBeePosition(Function function)
-    {
+    private double[] getBestOnlookerBeePosition(Function function) {
         double[] bestPosition = null;
 
-        for (int i = 0; i < this.allocatedOnlookerBees.size(); i++)
-        {
+        for (int i = 0; i < this.allocatedOnlookerBees.size(); i++) {
             double[] bestPositionCandidate = this.allocatedOnlookerBees.get(i).getBestPosition();
 
-            if (bestPosition == null)
-            {
+            if (bestPosition == null) {
                 bestPosition = bestPositionCandidate;
                 continue;
             }
-            else
-            {
+            else {
                 double bestPositionCandidateFitness = function.fitness(bestPositionCandidate);
                 double bestPositionFitness = function.fitness(bestPosition);
 
-                if (function.compareFitness(bestPositionCandidateFitness, bestPositionFitness))
-                {
+                if (function.compareFitness(bestPositionCandidateFitness, bestPositionFitness)) {
                     bestPosition = bestPositionCandidate;
                 }
             }
@@ -131,33 +111,27 @@ public class ScoutBee
         return bestPosition;
     }
 
-    public double[] getCurrentPosition()
-    {
+    public double[] getCurrentPosition() {
         return currentPosition;
     }
 
-    public void setCurrentPosition(double[] currentPosition)
-    {
+    public void setCurrentPosition(double[] currentPosition) {
         this.currentPosition = currentPosition;
     }
 
-    public double[] getBestFoodSourcePosition()
-    {
+    public double[] getBestFoodSourcePosition() {
         return bestFoodSourcePosition;
     }
 
-    public void setBestFoodSourcePosition(double[] bestFoodSourcePosition)
-    {
+    public void setBestFoodSourcePosition(double[] bestFoodSourcePosition) {
         this.bestFoodSourcePosition = bestFoodSourcePosition;
     }
 
-    public List<OnlookerBee> getAllocatedOnlookerBees()
-    {
+    public List<OnlookerBee> getAllocatedOnlookerBees() {
         return allocatedOnlookerBees;
     }
 
-    public void setAllocatedOnlookerBees(List<OnlookerBee> allocatedOnlookerBees)
-    {
+    public void setAllocatedOnlookerBees(List<OnlookerBee> allocatedOnlookerBees) {
         this.allocatedOnlookerBees = allocatedOnlookerBees;
     }
 }
