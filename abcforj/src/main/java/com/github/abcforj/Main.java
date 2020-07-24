@@ -6,8 +6,7 @@ import org.math.plot.Plot2DPanel;
 
 import com.github.abcforj.function.*;
 
-public class Main
-{
+public class Main {
     /**
      * @param args
      *            [0] -> Tamanho do enxame.
@@ -25,10 +24,8 @@ public class Main
      * @param args
      *            [6] - Dimensão do espaço de busca
      */
-    public static void main(String[] args)
-    {
-        if (args.length == 7)
-        {
+    public static void main(String[] args) {
+        if (args.length == 7) {
             int beehiveSize = Integer.parseInt(args[0]);
             float scoutBeesProportion = Float.parseFloat(args[1]);
             int numberOfExplorationCycles = Integer.parseInt(args[2]);
@@ -44,8 +41,7 @@ public class Main
             double[] results = abc.getBestSolutions();
             double[] iteractions = new double[results.length];
 
-            for (int i = 0; i < results.length; i++)
-            {
+            for (int i = 0; i < results.length; i++) {
                 iteractions[i] = i + 1;
             }
 
@@ -58,8 +54,7 @@ public class Main
             frame.pack();
             frame.setVisible(true);
         }
-        else
-        {
+        else {
             System.err.println("INVALID NUMBER OF ARGUMENTS!");
         }
     }

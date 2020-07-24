@@ -1,12 +1,10 @@
 package com.github.abcforj.function;
 
-public abstract class Function
-{
+public abstract class Function {
     private double bottomDomainLimit;
     private double topDomainLimit;
 
-    public Function(double bottomDomainLimit, double topDomainLimit)
-    {
+    public Function(double bottomDomainLimit, double topDomainLimit) {
         this.bottomDomainLimit = bottomDomainLimit;
         this.topDomainLimit = topDomainLimit;
     }
@@ -25,23 +23,19 @@ public abstract class Function
 
     public abstract boolean compareFitness(double fitness1, double fitness2);
 
-    public double getBottomDomainLimit()
-    {
+    public double getBottomDomainLimit() {
         return bottomDomainLimit;
     }
 
-    public void setBottomDomainLimit(double bottomDomainLimit)
-    {
+    public void setBottomDomainLimit(double bottomDomainLimit) {
         this.bottomDomainLimit = bottomDomainLimit;
     }
 
-    public double getTopDomainLimit()
-    {
+    public double getTopDomainLimit() {
         return topDomainLimit;
     }
 
-    public void setTopDomainLimit(double topDomainLimit)
-    {
+    public void setTopDomainLimit(double topDomainLimit) {
         this.topDomainLimit = topDomainLimit;
     }
 }
